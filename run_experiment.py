@@ -27,7 +27,7 @@ def run_game(params):
 
 def play_game(
     solver: Solver, seed: int, board_size: int = 4, win_tile: int = 2048
-) -> GameResult:
+) -> tuple[Solver, GameResult]:
     game = Game2048(size=board_size, win_tile=win_tile, rng=random.Random(seed))
     while not game.is_game_over() and not game.is_win():
         move = solver.choose_move(game)
@@ -39,7 +39,7 @@ def play_game(
                 break
             game.move(valid[0])
 
-    return GameResult(
+    return solver, GameResult(
         score=game.score,
         win=game.is_win(),
         max_tile=game.max_tile(),
@@ -102,32 +102,39 @@ def main() -> None:
 
     solvers = build_solvers(args.seed)
     tasks = {}
+    summaries = {}
 
     with progress:
         with Pool(processes=cpu_count()) as pool:
-            for solver in solvers:
-                tasks[solver.name] = progress.add_task(
+            game_args = [
+                (
+                    solver,
+                    args.seed + game_idx,
+                    args.board_size,
+                    args.win_tile,
+                )
+                for game_idx in range(args.games)
+                for solver in solvers
+            ]
+
+            tasks = {
+                solver.name: progress.add_task(
                     solver.name, start=False, total=args.games
                 )
+                for solver in solvers
+            }
+
+            results = []
+            for solver, result in pool.imap_unordered(run_game, game_args):
+                results.append(result)
+                progress.advance(tasks[solver.name])
 
             for solver in solvers:
-                game_args = [
-                    (
-                        solver,
-                        args.seed + game_idx,
-                        args.board_size,
-                        args.win_tile,
-                    )
-                    for game_idx in range(args.games)
-                ]
-
-                results = []
-                for result in pool.imap(run_game, game_args):
-                    results.append(result)
-                    progress.advance(tasks[solver.name])
-
                 progress.stop_task(tasks[solver.name])
-                print_summary(solver.name, summarize(results), args.games)
+                summaries[solver.name] = summarize(results)
+
+    for solver in solvers:
+        print_summary(solver.name, summaries[solver.name], args.games)
 
 
 if __name__ == "__main__":

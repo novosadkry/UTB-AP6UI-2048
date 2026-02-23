@@ -1,0 +1,35 @@
+=== Solver: random (100 her) ===
+Nejlepší skóre: 3120
+Nejhorší skóre: 276
+Průměrné skóre: 1089.68
+Výhry/Prohry: 0/100
+Průměrná max buňka: 108.8
+Průměrný počet tahů (celkem): 117.4
+Průměrný počet tahů podle směru: up=26.8, down=28.4, left=28.1, right=34.1
+
+=== Solver: priority_corner (100 her) ===
+Nejlepší skóre: 6888
+Nejhorší skóre: 544
+Průměrné skóre: 2709.64
+Výhry/Prohry: 0/100
+Průměrná max buňka: 211.8
+Průměrný počet tahů (celkem): 235.2
+Průměrný počet tahů podle směru: up=11.2, down=59.3, left=164.5, right=0.1
+
+=== Solver: alpha_beta (100 her) ===
+Nejlepší skóre: 24224
+Nejhorší skóre: 3076
+Průměrné skóre: 12654.36
+Výhry/Prohry: 15/85
+Průměrná max buňka: 965.1
+Průměrný počet tahů (celkem): 739.9
+Průměrný počet tahů podle směru: up=5.2, down=330.8, left=205.3, right=198.6
+
+=== Solver: expectiminimax (100 her) ===
+Nejlepší skóre: 22000
+Nejhorší skóre: 2920
+Průměrné skóre: 12681.28
+Výhry/Prohry: 15/85
+Průměrná max buňka: 970.2
+Průměrný počet tahů (celkem): 743.1
+Průměrný počet tahů podle směru: up=7.6, down=327.1, left=203.1, right=205.3
