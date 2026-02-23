@@ -101,11 +101,16 @@ def main() -> None:
     args = parser.parse_args()
 
     solvers = build_solvers(args.seed)
+    tasks = {}
 
     with progress:
         with Pool(processes=cpu_count()) as pool:
             for solver in solvers:
-                task_id = progress.add_task(solver.name, start=False, total=args.games)
+                tasks[solver.name] = progress.add_task(
+                    solver.name, start=False, total=args.games
+                )
+
+            for solver in solvers:
                 game_args = [
                     (
                         solver,
@@ -119,9 +124,9 @@ def main() -> None:
                 results = []
                 for result in pool.imap(run_game, game_args):
                     results.append(result)
-                    progress.advance(task_id)
+                    progress.advance(tasks[solver.name])
 
-                progress.stop_task(task_id)
+                progress.stop_task(tasks[solver.name])
                 print_summary(solver.name, summarize(results), args.games)
 
 

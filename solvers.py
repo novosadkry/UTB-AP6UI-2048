@@ -49,7 +49,7 @@ class PriorityCornerSolver(Solver):
 
 @dataclass
 class AlphaBetaSolver(Solver):
-    max_depth: int = 3
+    max_depth: int = 1
     name: str = "alpha_beta"
 
     def choose_move(self, game: Game2048) -> Direction:
@@ -119,7 +119,8 @@ class AlphaBetaSolver(Solver):
 
 @dataclass
 class ExpectiminimaxSolver(Solver):
-    max_depth: int = 3
+    rng: random.Random
+    max_depth: int = 1
     name: str = "expectiminimax"
 
     def choose_move(self, game: Game2048) -> Direction:
@@ -156,6 +157,7 @@ class ExpectiminimaxSolver(Solver):
         else:
             total_score = 0
             empty_cells = game.empty_cells()
+            empty_cells = random.sample(empty_cells, k=min(4, len(empty_cells)))
             if not empty_cells:
                 return snakeHeuristic(game)
             for r, c in empty_cells:
@@ -175,5 +177,5 @@ def build_solvers(seed: int) -> List[Solver]:
         RandomSolver(rng=random.Random(seed)),
         PriorityCornerSolver(),
         AlphaBetaSolver(),
-        ExpectiminimaxSolver(),
+        ExpectiminimaxSolver(rng=random.Random(seed)),
     ]
