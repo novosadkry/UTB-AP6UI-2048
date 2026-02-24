@@ -1,0 +1,5 @@
+solver,max_depth,games,best_score,worst_score,avg_score,wins,losses,avg_max_tile,avg_moves_total,avg_moves_up,avg_moves_down,avg_moves_left,avg_moves_right,total_moves
+random,,100,2824,292,1140.76,0,100,110.4,121.73,38.12,30.47,24.52,28.62,12173
+priority_corner,,100,5920,628,2458.48,0,100,195.84,219.43,10.51,54.85,153.92,0.15,21943
+alpha_beta,1,100,11356,724,3687.84,0,100,266.24,292.66,1.69,153.56,71.46,65.95,29266
+expectiminimax,1,100,11816,840,3609.6,0,100,261.76,288.73,1.52,148.29,70.86,68.06,28873

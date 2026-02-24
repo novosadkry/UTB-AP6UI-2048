@@ -1,8 +1,9 @@
 import random
 import argparse
+import csv
 from rich import print
 from rich.progress import Progress
-from typing import Dict, List
+from typing import Dict, List, Optional
 from statistics import mean
 from dataclasses import dataclass
 from game2048 import Direction, Game2048
@@ -83,6 +84,52 @@ def print_summary(solver_name: str, summary: Dict[str, float], games: int) -> No
     )
 
 
+def write_summary_csv(
+    summaries: Dict[str, Dict[str, float]],
+    games: int,
+    csv_path: str,
+    solver_depths: Dict[str, Optional[int]],
+) -> None:
+    direction_fields = [f"avg_moves_{d}" for d in Direction]
+    fieldnames = [
+        "solver",
+        "max_depth",
+        "games",
+        "best_score",
+        "worst_score",
+        "avg_score",
+        "wins",
+        "losses",
+        "avg_max_tile",
+        "avg_moves_total",
+        *direction_fields,
+        "total_moves",
+    ]
+
+    with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for solver_name, summary in summaries.items():
+            row = {
+                "solver": solver_name,
+                "max_depth": solver_depths.get(solver_name),
+                "games": games,
+                "best_score": int(summary["best_score"]),
+                "worst_score": int(summary["worst_score"]),
+                "avg_score": summary["avg_score"],
+                "wins": int(summary["wins"]),
+                "losses": int(summary["losses"]),
+                "avg_max_tile": summary["avg_max_tile"],
+                "avg_moves_total": summary["avg_moves_total"],
+                "total_moves": int(summary["total_moves"]),
+            }
+            for field in direction_fields:
+                row[field] = summary[field]
+
+            writer.writerow(row)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="2048 solver experiment runner")
     parser.add_argument("--games", type=int, default=10, help="Počet her na solver")
@@ -101,10 +148,16 @@ def main() -> None:
     parser.add_argument(
         "--threads", type=int, default=1, help="Počet paralelních vláken"
     )
+    parser.add_argument(
+        "--csv", type=str, default="results.csv", help="Output CSV file path"
+    )
     args = parser.parse_args()
 
     threads = min(args.threads, cpu_count())
     solvers = build_solvers(args.seed)
+    solver_depths = {
+        solver.name: getattr(solver, "max_depth", None) for solver in solvers
+    }
     tasks = {}
     summaries = {}
 
@@ -137,6 +190,9 @@ def main() -> None:
 
     for solver in solvers:
         print_summary(solver.name, summaries[solver.name], args.games)
+
+    write_summary_csv(summaries, args.games, args.csv, solver_depths)
+    print(f"\nCSV saved to: {args.csv}")
 
 
 if __name__ == "__main__":
