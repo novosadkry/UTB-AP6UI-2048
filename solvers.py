@@ -74,10 +74,10 @@ class AlphaBetaSolver(Solver):
     def alpha_beta(
         self, game: Game2048, depth: int, maximizing: bool, alpha: float, beta: float
     ) -> float:
+        if depth <= 0:
+            return snakeHeuristic(game)
         if game.is_game_over():
             return math.inf if game.is_win() else -math.inf
-        elif depth < 0:
-            return snakeHeuristic(game)
 
         if maximizing:
             best_score = -math.inf
@@ -95,6 +95,7 @@ class AlphaBetaSolver(Solver):
         else:
             best_score = math.inf
             empty_cells = game.empty_cells()
+            empty_cells = random.sample(empty_cells, k=min(6, len(empty_cells)))
             if not empty_cells:
                 return snakeHeuristic(game)
             for r, c in empty_cells:
@@ -141,10 +142,10 @@ class ExpectiminimaxSolver(Solver):
         return best_move
 
     def expectiminimax(self, game: Game2048, depth: int, maximizing: bool) -> float:
+        if depth <= 0:
+            return snakeHeuristic(game)
         if game.is_game_over():
             return math.inf if game.is_win() else -math.inf
-        elif depth < 0:
-            return snakeHeuristic(game)
 
         if maximizing:
             best_score = -math.inf
@@ -157,7 +158,7 @@ class ExpectiminimaxSolver(Solver):
         else:
             total_score = 0
             empty_cells = game.empty_cells()
-            empty_cells = random.sample(empty_cells, k=min(4, len(empty_cells)))
+            empty_cells = random.sample(empty_cells, k=min(6, len(empty_cells)))
             if not empty_cells:
                 return snakeHeuristic(game)
             for r, c in empty_cells:
@@ -176,6 +177,6 @@ def build_solvers(seed: int) -> List[Solver]:
     return [
         RandomSolver(rng=random.Random(seed)),
         PriorityCornerSolver(),
-        AlphaBetaSolver(),
-        ExpectiminimaxSolver(rng=random.Random(seed)),
+        AlphaBetaSolver(max_depth=3),
+        ExpectiminimaxSolver(rng=random.Random(seed), max_depth=3),
     ]

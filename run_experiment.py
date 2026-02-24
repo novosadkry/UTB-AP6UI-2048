@@ -124,14 +124,14 @@ def main() -> None:
                 for solver in solvers
             }
 
-            results = []
+            results = {solver.name: [] for solver in solvers}
             for solver, result in pool.imap_unordered(run_game, game_args):
-                results.append(result)
+                results[solver.name].append(result)
                 progress.advance(tasks[solver.name])
 
             for solver in solvers:
                 progress.stop_task(tasks[solver.name])
-                summaries[solver.name] = summarize(results)
+                summaries[solver.name] = summarize(results[solver.name])
 
     for solver in solvers:
         print_summary(solver.name, summaries[solver.name], args.games)
