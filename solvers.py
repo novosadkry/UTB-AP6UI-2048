@@ -177,6 +177,6 @@ def build_solvers(seed: int) -> List[Solver]:
     return [
         RandomSolver(rng=random.Random(seed)),
         PriorityCornerSolver(),
-        AlphaBetaSolver(max_depth=3),
-        ExpectiminimaxSolver(rng=random.Random(seed), max_depth=3),
+        AlphaBetaSolver(max_depth=1),
+        ExpectiminimaxSolver(rng=random.Random(seed), max_depth=1),
     ]

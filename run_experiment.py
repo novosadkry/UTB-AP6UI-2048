@@ -98,14 +98,18 @@ def main() -> None:
     parser.add_argument(
         "--win-tile", type=int, default=2048, help="Cílová hodnota buňky"
     )
+    parser.add_argument(
+        "--threads", type=int, default=1, help="Počet paralelních vláken"
+    )
     args = parser.parse_args()
 
+    threads = min(args.threads, cpu_count())
     solvers = build_solvers(args.seed)
     tasks = {}
     summaries = {}
 
     with progress:
-        with Pool(processes=cpu_count()) as pool:
+        with Pool(processes=threads) as pool:
             game_args = [
                 (
                     solver,
@@ -118,9 +122,7 @@ def main() -> None:
             ]
 
             tasks = {
-                solver.name: progress.add_task(
-                    solver.name, start=False, total=args.games
-                )
+                solver.name: progress.add_task(solver.name, total=args.games)
                 for solver in solvers
             }
 
